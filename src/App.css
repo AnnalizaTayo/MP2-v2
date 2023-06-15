@@ -54,6 +54,13 @@
   animation: blink 1s infinite;
 }
 
+.floating-button:hover , .back-to-top-button:hover {
+  background-color: #FFFFFF;
+  color: #836953;
+  border: 2px solid #F8C8DC;
+  cursor: pointer;
+}
+
 .floating-button {
   left: 2rem;
 }

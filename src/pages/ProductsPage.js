@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import {BsFillCartFill , BsFillHeartFill} from 'react-icons/bs';
+import {FaFilter} from 'react-icons/fa';
 import './ProductsPage.css';
 
 const ProductList = () => {
+    const [showFilter, setShowFilter] = useState(false);
     const [results, setResults] = useState([]);
     const [filtered, setFiltered] = useState([]);
-    const [selectedFilters, setSelectedFilters] = useState([]);
     const [searchInput, setSearchInput] = useState('');
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
     const navigate  = useNavigate();
-    const [products, setProducts] = useState([]);
     const { pettype } = useParams();
     const { category } = useParams();
     const { search } = useParams();
+    const [currentPage, setCurrentPage] = useState(1);
+    const productsPerPage = 8;
+
     const [filters, setFilters] = useState({
         productcategory: '|All Products',
         subcategory: '|All',
@@ -311,13 +313,9 @@ const ProductList = () => {
         }else{
             setIsAllProductsFiltered(true);
         }
-        //handleFilterChange('pettype', '');
-        //handleFilterChange('productcategory', '');
-        //handleFilterChange('', '');
     }
 
     useEffect(() => {
-        //console.log("hello fetch");
         fetchProducts('');
     }, []);
 
@@ -327,17 +325,7 @@ const ProductList = () => {
             setFiltered(results);
         
             let filteredProducts = results;
-			//this is waterfall filter/elimination system
-            /*if (!pettype && !category && !search) { // not needed
-                setFiltered(results);
-            }*/
             routeUpdate();
-            /*if (pettype != null && pettype.trim() != "") {
-                filteredProducts = productsFilter(filteredProducts, pettype);
-            }
-            if (category != null && category.trim() != "") {
-                filteredProducts = productsFilter(filteredProducts, null, category);
-            }*/
 			if(searchInput != null && searchInput.trim() != ""){
                 filteredProducts = productsFilter(filteredProducts, null, null, searchInput);
 			}else
@@ -354,11 +342,6 @@ const ProductList = () => {
 
     useEffect(() => {
         if (results){
-            // const [filters, setFilters] = useState({
-            //     productcategory: 'All Products',
-            //     subcategory: 'All',
-            //     pettype: 'All',
-            // });
 
             setFiltered(results);
             let filteredProducts = results;
@@ -372,7 +355,6 @@ const ProductList = () => {
                 filteredProducts = productsFilter(filteredProducts, filters.pettype);
             }
         
-            //setFiltered(filteredProducts);
             handleFilterChange('', '');
         }
     }, [filters.productcategory,filters.subcategory,filters.pettype]);
@@ -474,29 +456,19 @@ const ProductList = () => {
     
     const productsFilter = (toFilter = results,pettype=null,category=null,productdescription=null,subcategory=null) => {
         if(toFilter==null) return null;
-        //console.log("toFilter");
-        //console.log(toFilter);
-        /*if(category!=null && !category.toLowerCase().includes("all products")){
-            setFiltered(results);
-            return results;
-        }*/
-        //console.log(toFilter);(subcategory!=null &&(subcategory.toLowerCase().includes("small")))||
         if(pettype!=null && (!pettype.toLowerCase().includes("all")||pettype.toLowerCase().includes("small"))&&!pettype.trim().replace("|","")==""){
             toFilter = toFilter.filter(prod => {
                 const ptArr = pettype.toLowerCase().split("|");
                 // Apply filters here
                 if (!ptArr.includes(prod.pettype.toLowerCase())) {
-                    //console.log("eliminated "+prod.pettype);
                     return false; // Skip item if category doesn't match
                 }
                 // ... other filters
-                //console.log("included "+prod.pettype);
             
                 return true; // Include item in filtered list
             });
         }
 
-        //if(category!=null && !category.trim()==="")
         if(category!=null && !(category.toLowerCase().includes("all")||category.trim().replace("|","")=="")){
             toFilter = toFilter.filter(prod => {
                 const ctArr = category.toLowerCase().split("|");
@@ -510,7 +482,6 @@ const ProductList = () => {
                 return true; // Include item in filtered list
             });
         }
-//(subcategory.toLowerCase().includes("small")
         if(subcategory!=null && !(subcategory.toLowerCase().includes("all")||subcategory.trim().replace("|","")=="")){
             toFilter = toFilter.filter(prod => {
                 const scArr = subcategory.toLowerCase().split("|");
@@ -530,7 +501,6 @@ const ProductList = () => {
             toFilter = toFilter.filter(prod => {
                     // Apply filters here
                     if (!prod.productdescription.toLowerCase().includes(productdescription.toLowerCase())) {
-                        //console.log(prod);
                         return false; // Skip item if category doesn't match
                     }
                     // ... other filters
@@ -539,25 +509,9 @@ const ProductList = () => {
                 }
             );
         }
-        //console.log("Filtered");
-        //console.log(toFilter);
         setFiltered(toFilter);
         return toFilter;
     };
-
-    // const filteredProducts = results.filter((product) => {
-    //     setFiltered([]);
-    //     if (filters.productcategory !== 'All Products' && product.productcategory !== filters.productcategory) {
-    //       return false;
-    //     }
-    //     if (filters.subcategory !== 'All' && product.subcategory !== filters.subcategory) {
-    //       return false;
-    //     }
-    //     if (filters.pettype !== 'All' && product.pettype !== filters.pettype) {
-    //       return false;
-    //     }
-    //     return true;
-    // });
     
     const handleFilterChange = (filterName, value, filtersNow = filters) => {
         // if(filtersNow[filterName].toLowerCase().includes(value.toLowerCase())){//remove
@@ -760,242 +714,260 @@ const ProductList = () => {
         return rawr;
     };
 
+    const toggleFilter = () => {
+        setShowFilter(!showFilter);
+    };
 
     return (
-        <div className='productspage'>
-            <aside>
-                <h3>Filter by:</h3>
-                <div>{/* All Categories */}
-                    <label>
-                        <input type="checkbox" checked={isAllProductsFiltered} onChange={(e)=>{
-                            setIsAllProductsFiltered(!isAllProductsFiltered);
-                            handleFilterChange('productcategory', 'All Products');
-                        }} />
-                        All Products
-                    </label> {/* All Products */}
-                    <label className=''>
-                        <input type="checkbox"checked={isAllSubcategoriesFiltered} onChange={(e)=>{
-                            setIsAllSubcategoriesFiltered(!isAllSubcategoriesFiltered);
-                            handleFilterChange('subcategory', 'All');
-                        }} />
-                        All Subcategories
-                    </label>{/* All Subcategory */}
-                    <div>  {/* Categories and Subcategories */}
-                        <div className='filterbuttons'> {/* Food and Nutrition */}
+        <div className='products-container'>
+            <div className='productspage'>
+                <aside>
+                    <button className='funnel icons' onClick={toggleFilter}><FaFilter/></button>
+                    {showFilter && (
+                    <div className='filter-collapse'>
+                        <h3>Filter by:</h3>
+                        <div>{/* All Categories */}
                             <label>
-                                <input type="checkbox" checked={isFoodAndNutritionFiltered} onChange={(e)=>{
-                                    setIsFoodAndNutritionFiltered(!isFoodAndNutritionFiltered);
-                                    handleFilterChange('productcategory', 'Food and Nutrition');
+                                <input type="checkbox" checked={isAllProductsFiltered} onChange={(e)=>{
+                                    setIsAllProductsFiltered(!isAllProductsFiltered);
+                                    handleFilterChange('productcategory', 'All Products');
                                 }} />
-                                Food and Nutrition
+                                All Products
+                            </label> {/* All Products */}
+                            <label>
+                                <input type="checkbox"checked={isAllSubcategoriesFiltered} onChange={(e)=>{
+                                    setIsAllSubcategoriesFiltered(!isAllSubcategoriesFiltered);
+                                    handleFilterChange('subcategory', 'All');
+                                }} />
+                                All Subcategories
+                            </label>{/* All Subcategory */}
+                            <div>  {/* Categories and Subcategories */}
+                                <div className='filterbuttons'> {/* Food and Nutrition */}
+                                    <label>
+                                        <input type="checkbox" checked={isFoodAndNutritionFiltered} onChange={(e)=>{
+                                            setIsFoodAndNutritionFiltered(!isFoodAndNutritionFiltered);
+                                            handleFilterChange('productcategory', 'Food and Nutrition');
+                                        }} />
+                                        Food and Nutrition
+                                    </label>
+                                    <ul>
+                                        <li> {/* food */}
+                                            <label>
+                                                <input type="checkbox" checked={isFoodFiltered} onChange={(e)=>{
+                                                    setIsFoodFiltered(!isFoodFiltered);
+                                                    handleFilterChange('subcategory', 'Food');
+                                                }} />
+                                                Food
+                                            </label>
+                                        </li>
+                                        <li>{/* treats */}
+                                            <label>
+                                                <input type="checkbox" checked={isTreatsFiltered} onChange={(e)=>{
+                                                    setIsTreatsFiltered(!isTreatsFiltered);
+                                                    handleFilterChange('subcategory', 'Treats');
+                                                }} />
+                                                Treats
+                                            </label>
+                                        </li>
+                                        <li> {/* supplements */}
+                                            <label>
+                                                <input type="checkbox" checked={isSupplementsFiltered} onChange={(e)=>{
+                                                    setIsSupplementsFiltered(!isSupplementsFiltered);
+                                                    handleFilterChange('subcategory', 'Supplements');
+                                                }} />
+                                                Supplements
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div className='filterbuttons'> {/* Toys and Enrichment */}
+                                    <label>
+                                        <input type="checkbox" checked={isToysAndEnrichmentFiltered} onChange={(e)=>{
+                                            setIsToysAndEnrichmentFiltered(!isToysAndEnrichmentFiltered);
+                                            handleFilterChange('productcategory', 'Toys and Enrichment');
+                                        }} />
+                                        Toys and Enrichment
+                                    </label>
+                                    <ul>
+                                        <li>{/* Toys */}
+                                            <label>
+                                                <input type="checkbox" checked={isToysFiltered} onChange={(e)=>{
+                                                    setIsToysFiltered(!isToysFiltered);
+                                                    handleFilterChange('subcategory', 'Toys');
+                                                }} />
+                                                Toys
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div className='filterbuttons'> {/* Care and Well-being */}
+                                    <label>
+                                        <input type="checkbox" checked={isCareAndWellBeingFiltered} onChange={(e)=>{
+                                            setIsCareAndWellBeingFiltered(!isCareAndWellBeingFiltered);
+                                            handleFilterChange('productcategory', 'Care and Well-being');
+                                        }} />
+                                        Care and Well-being
+                                    </label>
+                                    <ul>
+                                        <li>{/* Grooming Tools */}
+                                            <label>
+                                                <input type="checkbox" checked={isGroomingToolsFiltered} onChange={(e)=>{
+                                                    setIsGroomingToolsFiltered(!isGroomingToolsFiltered);
+                                                    handleFilterChange('subcategory', 'Grooming Tools');
+                                                }} />
+                                                Grooming Tools
+                                            </label>
+                                        </li>
+                                        <li>{/* Bedding */}
+                                            <label>
+                                                <input type="checkbox" checked={isBeddingFiltered} onChange={(e)=>{
+                                                    setIsBeddingFiltered(!isBeddingFiltered);
+                                                    handleFilterChange('subcategory', 'Bedding');
+                                                }} />
+                                                Bedding
+                                            </label>
+                                        </li>
+                                        <li>{/* Leash and Collar */}
+                                            <label>
+                                                <input type="checkbox" checked={isLeashesAndCollarFiltered} onChange={(e)=>{
+                                                    setIsLeashesAndCollarFiltered(!isLeashesAndCollarFiltered);
+                                                    handleFilterChange('subcategory', 'Leashes and Collar');
+                                                }} />
+                                                Leashes and Collar
+                                            </label>
+                                        </li>
+                                        <li>{/* Accessories */}
+                                            <label>
+                                                <input type="checkbox" checked={isAccessoriesFiltered} onChange={(e)=>{
+                                                    setIsAccessoriesFiltered(!isAccessoriesFiltered);
+                                                    handleFilterChange('subcategory', 'Accessories');
+                                                }} />
+                                                Accessories
+                                            </label>
+                                        </li>
+                                        <li>{/* Aquarium */}
+                                            <label>
+                                                <input type="checkbox" checked={isAquariumFiltered} onChange={(e)=>{
+                                                    setIsAquariumFiltered(!isAquariumFiltered);
+                                                    handleFilterChange('subcategory', 'Aquarium');
+                                                }} />
+                                                Aquarium
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>                   
+                        </div>
+                        <div className='filterbuttons'> {/* Pet Types */}
+                            <label>{/* All Pet Types */}
+                                <input type="checkbox" checked={isAllPetTypesFiltered} onChange={(e)=>{
+                                    setIsAllPetTypesFiltered(!isAllPetTypesFiltered);
+                                    handleFilterChange('pettype', 'All');
+                                }} />
+                                All Pet Types
                             </label>
-                            <ul>
-                                <li> {/* food */}
+                            <ul> {/* Pet Type */}
+                                <li> {/* Dog */}
                                     <label>
-                                        <input type="checkbox" checked={isFoodFiltered} onChange={(e)=>{
-                                            setIsFoodFiltered(!isFoodFiltered);
-                                            handleFilterChange('subcategory', 'Food');
+                                        <input type="checkbox" checked={isDogFiltered} onChange={(e)=>{
+                                            setIsDogFiltered(!isDogFiltered);
+                                            handleFilterChange('pettype', 'Dog');
                                         }} />
-                                        Food
+                                        Dog
                                     </label>
                                 </li>
-                                <li>{/* treats */}
+                                <li>{/* Cat */}
                                     <label>
-                                        <input type="checkbox" checked={isTreatsFiltered} onChange={(e)=>{
-                                            setIsTreatsFiltered(!isTreatsFiltered);
-                                            handleFilterChange('subcategory', 'Treats');
+                                        <input type="checkbox" checked={isCatFiltered} onChange={(e)=>{
+                                            setIsCatFiltered(!isCatFiltered);
+                                            handleFilterChange('pettype', 'Cat');
                                         }} />
-                                        Treats
+                                        Cat
                                     </label>
                                 </li>
-                                <li> {/* supplements */}
+                                <li>{/* Bird */}
                                     <label>
-                                        <input type="checkbox" checked={isSupplementsFiltered} onChange={(e)=>{
-                                            setIsSupplementsFiltered(!isSupplementsFiltered);
-                                            handleFilterChange('subcategory', 'Supplements');
+                                        <input type="checkbox" checked={isBirdFiltered} onChange={(e)=>{
+                                            setIsBirdFiltered(!isBirdFiltered);
+                                            handleFilterChange('pettype', 'Bird');
                                         }} />
-                                        Supplements
+                                        Bird
+                                    </label>
+                                </li>
+                                <li>{/* Fish */}
+                                    <label>
+                                        <input type="checkbox" checked={isFishFiltered} onChange={(e)=>{
+                                            setIsFishFiltered(!isFishFiltered);
+                                            handleFilterChange('pettype', 'Fish');
+                                        }} />
+                                        Fish
+                                    </label>
+                                </li>
+                                <li>{/* Reptile */}
+                                    <label>
+                                        <input type="checkbox" checked={isReptileFiltered} onChange={(e)=>{
+                                            setIsReptileFiltered(!isReptileFiltered);
+                                            handleFilterChange('pettype', 'Reptile');
+                                        }} />
+                                        Reptile
+                                    </label>
+                                </li>
+                                <li>{/* Small Animals */}
+                                    <label>
+                                        <input type="checkbox" checked={isSmallAnimalsFiltered} onChange={(e)=>{
+                                            setIsSmallAnimalsFiltered(!isSmallAnimalsFiltered);
+                                            handleFilterChange('pettype', 'small animals');
+                                        }} />
+                                        Small Animals
                                     </label>
                                 </li>
                             </ul>
                         </div>
-                        <div className='filterbuttons'> {/* Toys and Enrichment */}
-                            <label>
-                                <input type="checkbox" checked={isToysAndEnrichmentFiltered} onChange={(e)=>{
-                                    setIsToysAndEnrichmentFiltered(!isToysAndEnrichmentFiltered);
-                                    handleFilterChange('productcategory', 'Toys and Enrichment');
-                                }} />
-                                Toys and Enrichment
-                            </label>
-                            <ul>
-                                <li>{/* Toys */}
-                                    <label>
-                                        <input type="checkbox" checked={isToysFiltered} onChange={(e)=>{
-                                            setIsToysFiltered(!isToysFiltered);
-                                            handleFilterChange('subcategory', 'Toys');
-                                        }} />
-                                        Toys
-                                    </label>
+                    </div>)}                    
+                </aside>
+                <div className='right'>
+                    <form onSubmit={handleSearchSubmit} className='hide searchbar-products'>
+                        <input
+                        type="text"
+                        name="search"
+                        id="search1"
+                        placeholder="Search for products.."
+                        value={searchInput}
+                        onChange={handleSearchInputChange}
+                        />
+                        <button type="submit">Search</button>
+                    </form>
+                    <div className='products-card'>
+                        <ul>
+                            {	results ? ((
+                                (filtered ? filtered : results)
+                                .slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage)
+                                .map(product => (
+                                <li key={product.productid} className='cards'>
+                                    <div className='productinfo-container'>
+                                        <img src={product.productimage} alt={product.productname} />
+                                        <h4>{product.productname}</h4>
+                                        <p>Price: ${product.price}</p>
+                                        <p>Stock: {product.stock}</p>
+                                    </div>                                    
+                                    <button onClick={() => handleAddToWishlist(product.productid)}><BsFillHeartFill/></button>
+                                    <button onClick={() => handleAddToCart(product.productid)}><BsFillCartFill/></button>
                                 </li>
-                            </ul>
+                                ))
+                                )) : "No Pets Available yet"
+                            }
+                        </ul>
+                        <div className="pagination-buttons">
+                            {currentPage > 1 && (
+                            <button onClick={() => setCurrentPage(currentPage - 1)}>Previous</button>
+                            )}
+                            {results && currentPage * productsPerPage < results.length && (
+                            <button onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
+                            )}
                         </div>
-                        <div className='filterbuttons'> {/* Care and Well-being */}
-                            <label>
-                                <input type="checkbox" checked={isCareAndWellBeingFiltered} onChange={(e)=>{
-                                    setIsCareAndWellBeingFiltered(!isCareAndWellBeingFiltered);
-                                    handleFilterChange('productcategory', 'Care and Well-being');
-                                }} />
-                                Care and Well-being
-                            </label>
-                            <ul>
-                                <li>{/* Grooming Tools */}
-                                    <label>
-                                        <input type="checkbox" checked={isGroomingToolsFiltered} onChange={(e)=>{
-                                            setIsGroomingToolsFiltered(!isGroomingToolsFiltered);
-                                            handleFilterChange('subcategory', 'Grooming Tools');
-                                        }} />
-                                        Grooming Tools
-                                    </label>
-                                </li>
-                                <li>{/* Bedding */}
-                                    <label>
-                                        <input type="checkbox" checked={isBeddingFiltered} onChange={(e)=>{
-                                            setIsBeddingFiltered(!isBeddingFiltered);
-                                            handleFilterChange('subcategory', 'Bedding');
-                                        }} />
-                                        Bedding
-                                    </label>
-                                </li>
-                                <li>{/* Leash and Collar */}
-                                    <label>
-                                        <input type="checkbox" checked={isLeashesAndCollarFiltered} onChange={(e)=>{
-                                            setIsLeashesAndCollarFiltered(!isLeashesAndCollarFiltered);
-                                            handleFilterChange('subcategory', 'Leashes and Collar');
-                                        }} />
-                                        Leashes and Collar
-                                    </label>
-                                </li>
-                                <li>{/* Accessories */}
-                                    <label>
-                                        <input type="checkbox" checked={isAccessoriesFiltered} onChange={(e)=>{
-                                            setIsAccessoriesFiltered(!isAccessoriesFiltered);
-                                            handleFilterChange('subcategory', 'Accessories');
-                                        }} />
-                                        Accessories
-                                    </label>
-                                </li>
-                                <li>{/* Aquarium */}
-                                    <label>
-                                        <input type="checkbox" checked={isAquariumFiltered} onChange={(e)=>{
-                                            setIsAquariumFiltered(!isAquariumFiltered);
-                                            handleFilterChange('subcategory', 'Aquarium');
-                                        }} />
-                                        Aquarium
-                                    </label>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>                   
+                    </div>
                 </div>
-                <div className='filterbuttons'> {/* Pet Types */}
-                    <label>{/* All Pet Types */}
-                        <input type="checkbox" checked={isAllPetTypesFiltered} onChange={(e)=>{
-                            setIsAllPetTypesFiltered(!isAllPetTypesFiltered);
-                            handleFilterChange('pettype', 'All');
-                        }} />
-                        All Pet Types
-                    </label>
-                    <ul> {/* Pet Type */}
-                        <li> {/* Dog */}
-                            <label>
-                                <input type="checkbox" checked={isDogFiltered} onChange={(e)=>{
-                                    setIsDogFiltered(!isDogFiltered);
-                                    handleFilterChange('pettype', 'Dog');
-                                }} />
-                                Dog
-                            </label>
-                        </li>
-                        <li>{/* Cat */}
-                            <label>
-                                <input type="checkbox" checked={isCatFiltered} onChange={(e)=>{
-                                    setIsCatFiltered(!isCatFiltered);
-                                    handleFilterChange('pettype', 'Cat');
-                                }} />
-                                Cat
-                            </label>
-                        </li>
-                        <li>{/* Bird */}
-                            <label>
-                                <input type="checkbox" checked={isBirdFiltered} onChange={(e)=>{
-                                    setIsBirdFiltered(!isBirdFiltered);
-                                    handleFilterChange('pettype', 'Bird');
-                                }} />
-                                Bird
-                            </label>
-                        </li>
-                        <li>{/* Fish */}
-                            <label>
-                                <input type="checkbox" checked={isFishFiltered} onChange={(e)=>{
-                                    setIsFishFiltered(!isFishFiltered);
-                                    handleFilterChange('pettype', 'Fish');
-                                }} />
-                                Fish
-                            </label>
-                        </li>
-                        <li>{/* Reptile */}
-                            <label>
-                                <input type="checkbox" checked={isReptileFiltered} onChange={(e)=>{
-                                    setIsReptileFiltered(!isReptileFiltered);
-                                    handleFilterChange('pettype', 'Reptile');
-                                }} />
-                                Reptile
-                            </label>
-                        </li>
-                        <li>{/* Small Animals */}
-                            <label>
-                                <input type="checkbox" checked={isSmallAnimalsFiltered} onChange={(e)=>{
-                                    setIsSmallAnimalsFiltered(!isSmallAnimalsFiltered);
-                                    handleFilterChange('pettype', 'small animals');
-                                }} />
-                                Small Animals
-                            </label>
-                        </li>
-                    </ul>
-                </div>
-            </aside>
-            <div className='right'>
-                <form onSubmit={handleSearchSubmit}>
-                    <input
-                    type="text"
-                    name="search"
-                    id="search1"
-                    placeholder="Search for products.."
-                    value={searchInput}
-                    onChange={handleSearchInputChange}
-                    />
-                    <button type="submit">Search</button>
-                </form>
-                <ul>
-                    {	results ? ((
-						(filtered ? filtered : results).map(product => (
-						<li key={product.productid}>
-							<img src={product.productimage} alt={product.productname} />
-							<h3>{product.productname}</h3>
-							<p>{product.productdescription}</p>
-							<p><b>category</b>: {product.productcategory}</p>
-							<p><b>subcategory</b>: {product.subcategory}</p>
-							<p><b>type</b>: {product.pettype}</p>
-							<p>Price: ${product.price}</p>
-							<p>Stock: {product.stock}</p>
-							<button onClick={() => handleAddToCart(product.productid)}>Add to Cart</button>
-							<button onClick={() => handleAddToWishlist(product.productid)}>Add to Wishlist</button>
-						</li>
-						))
-						)) : "No Pets Available yet"
-					}
-                </ul>
             </div>
-            
         </div>
     );
 };

@@ -3,9 +3,11 @@
     grid-template-columns: 1fr 2fr;
 }
 
-aside .profile-container {
-    margin: 2rem auto;
+.profilePage aside {
+    margin:0;
     text-align: center;
+    background-color: #836953;
+    color: #ffffff;
 }
 
 .profile-picture img {
@@ -16,18 +18,26 @@ aside .profile-container {
     margin: 0.25rem auto;
 }
 
+.profile-details {
+    margin-top: 1rem;
+}
+
 .profileButtons {
     margin: 1rem auto;
     width: 100%;
     text-align: center;
 }
 
-button.edit-button.button , button.logout-button.button , .transaction-button.button{
+button.edit-button.button,
+button.logout-button.button,
+.transaction-button.button {
     width: 100%;
     margin: 0.5rem auto;
 }
 
-button.edit-button.button:hover , button.logout-button.button:hover , .transaction-button.button:hover {
+button.edit-button.button:hover,
+button.logout-button.button:hover,
+.transaction-button.button:hover {
     background-color: #ffffff;
     color: #836953;
     cursor: pointer;
@@ -79,24 +89,24 @@ button.edit-button.button:hover , button.logout-button.button:hover , .transacti
 }
 
 .cancel-button {
-    position: absolute; 
-    top: 0px;  
-    right: 0px; 
-    transition: all 200ms; 
-    font-size: 30px;  
-    font-weight: normal; 
-    text-decoration: none;  
-    text-align: center;    
-    background: #F8C8dc;  
-    border-radius: 10px;  
-    cursor: pointer;  
-    float: right;  
-    padding: 0;  
-    color: #fff;  
-    margin-top: 0;  
-    margin-right: 0;  
-    height: 40px;  
-    width: 40px;    
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    transition: all 200ms;
+    font-size: 30px;
+    font-weight: normal;
+    text-decoration: none;
+    text-align: center;
+    background: #f8c8dc;
+    border-radius: 10px;
+    cursor: pointer;
+    float: right;
+    padding: 0;
+    color: #fff;
+    margin-top: 0;
+    margin-right: 0;
+    height: 40px;
+    width: 40px;
     line-height: 45px;
     border: 1px solid #836953;
 }
@@ -108,7 +118,6 @@ button.edit-button.button:hover , button.logout-button.button:hover , .transacti
 .update-button {
     cursor: pointer;
 }
-
 
 /* Pet Care Tips */
 section.petcare {
@@ -140,7 +149,7 @@ section.petcare .tips {
     margin: 0.5rem;
 }
 
-.care-tips h2{
+.care-tips h2 {
     margin-bottom: 1rem;
 }
 
@@ -151,4 +160,67 @@ section.petcare .tips {
 .blog-content p {
     font-size: 1.25rem;
     margin: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .profileButtons {
+        margin: 1rem auto;
+        width: 80%;
+        text-align: center;
+    }
+    
+    .profilePage {
+        grid-template-columns: 1fr;
+    }
+
+    .profilePage aside {
+    margin: 0;
+    padding: 2rem 0;
+    text-align: center;
+    }
+
+    .profile-details {
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-picture img {
+    width: 8rem;
+    height: 8rem;
+    }
+
+    .editProfileform-container {
+    width: 20rem;
+    }
+
+    section.petcare {
+    padding: 2rem;
+    }
+
+    section.petcare {
+        overflow-y: visible;
+        height: auto;
+        padding: 3rem;
+    }
+    
+    
+    section.petcare .tips {
+        margin: auto;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    
+
+    .editProfileform-container {
+    width: 18rem;
+    }
+
+    section.petcare {
+    padding: 1rem;
+    }
 }
