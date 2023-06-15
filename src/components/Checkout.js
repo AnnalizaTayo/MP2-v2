@@ -4,6 +4,20 @@ import './Checkout.css';
 const Checkout = ({ handleCheckout }) => {
   const [showCheckout, setShowCheckout] = useState(false);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+  const [selectedMonth, setSelectedMonth] = useState('');
+  
+  const handleMonthChange = (e) => {
+    const selectedDate = new Date(e.target.value);
+    const currentDate = new Date();
+
+    if (selectedDate < currentDate) {
+      // If selected month is in the past, clear the input
+      setSelectedMonth('');
+      alert('Please select a future month');
+    } else {
+      setSelectedMonth(e.target.value);
+    }
+  };
 
   const toggleCheckoutForm = () => {
     setShowCheckout(!showCheckout);
@@ -82,7 +96,7 @@ const Checkout = ({ handleCheckout }) => {
                         </legend>
                         <input type="text" id="cardholderName" name="cardholderName" placeholder="Cardholder Name" required />
                         <input type="text" id="cardNumber" name="cardNumber" placeholder="Card Number" required />
-                        <input type="date" id="expiryDate" name="expiryDate" placeholder="Expiry Date" required />
+                        <input type="month" id="expiryDate" name="expiryDate" placeholder="Expiry Date" value={selectedMonth} onChange={handleMonthChange} required/>
                         <input type="text" id="cvv" name="cvv" placeholder="CVV" required />
                     </fieldset>
                     </div>

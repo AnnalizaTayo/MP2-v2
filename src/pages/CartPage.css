@@ -140,7 +140,7 @@ input.checkoutButton {
 
     .columnLabel, .productLists li {
         display: grid;
-        grid-template-columns: 0.5fr 1fr repeat(2, 0.75fr);
+        grid-template-columns: 0.25fr 1fr 0.5fr 0.25fr;
     }
 
     li div.productinfo img {
@@ -158,15 +158,26 @@ input.checkoutButton {
     }
 
     .labelButton {
-        width: 4rem;
         margin: 0.1rem;
     }
 
     .footing {
         display: flex;
+        flex-wrap: wrap;
         margin-bottom: 3rem;
-        justify-content: flex-start;
         padding: 10px;
     }
 
+    .allSelectedButtons {
+        display: flex;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .totalItems {
+        display: flex;
+        width: 100%;
+        justify-content: flex-end;
+        margin: 1rem 0;
+    }
 }

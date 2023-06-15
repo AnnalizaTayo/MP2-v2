@@ -5,7 +5,7 @@
   color: #836953;
 }
 
-aside {
+.vet-consultation-page aside {
   color: #ffffff;
   background-color: #836953;
   padding: 1.5rem;
@@ -272,7 +272,7 @@ width: 100%;
 
 @media (max-width: 768px) {
   .vet-consultation-page {
-  grid-template-columns: 1fr;
+    grid-template-columns: 1fr;
   }
 
   .popup {
@@ -286,8 +286,14 @@ width: 100%;
 }
 
 @media (max-width: 480px) {
+  .consultation-scheduler {
+    flex: 1;
+    padding: 1rem;
+  }
+
   .vet-consultation-page {
-  grid-template-columns: 1fr;
+    display: grid;
+    grid-template-columns: 1fr;
   }
 
   .appointmentList-container {

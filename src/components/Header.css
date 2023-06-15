@@ -395,6 +395,7 @@ li {
                 grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
                 gap: 0.05rem;
                 background-color: #f8c8dc;  
+                z-index: 999;
             }
         
             h3 {
